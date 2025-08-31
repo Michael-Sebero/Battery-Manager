@@ -1,13 +1,13 @@
 ## How to Install
-* Place `ac-mode` in `/bin`
+. Place `ac-mode` in `/bin`
 
-* Make the program executable
+. Make the program executable
 
 ```
 sudo chmod 755 /bin/ac-mode
 ```
 
-* Add this section to `rc.local`
+. Add this section to `rc.local`
 
 ```
 # AC MODE
@@ -16,4 +16,4 @@ if [ -x /bin/ac-mode ]; then
 fi
 ```
 
-* Restart system
+. Restart system
