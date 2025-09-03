@@ -57,7 +57,7 @@ apply_perf() {
     
     # Scheduler: Low-Latency Optimizations
     sudo sysctl -w kernel.timer_migration=1
-    sudo sysctl -w kernel.sched_rt_runtime_us=950000 
+    sudo sysctl -w kernel.sched_rt_runtime_us=990000 
 
     # Media / Misc
     sudo sysctl -w kernel.shmmax=17179869184
