@@ -23,6 +23,7 @@ apply_perf() {
     sudo sysctl -w net.core.wmem_max=16777216
     sudo sysctl -w net.ipv4.tcp_rmem="4096 87380 16777216"
     sudo sysctl -w net.ipv4.tcp_wmem="4096 87380 16777216"
+    sudo sysctl -w net.ipv4.tcp_congestion_control = bbr
 
     # Kernel Core Security
     sudo sysctl -w kernel.randomize_va_space=1
