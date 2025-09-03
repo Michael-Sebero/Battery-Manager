@@ -46,7 +46,7 @@ apply_perf() {
     sudo sysctl -w vm.extfrag_threshold=100
     sudo sysctl -w vm.compaction_proactiveness=80
     sudo sysctl -w vm.watermark_boost_factor=15000
-    sudo sysctl -w vm.watermark_scale_factor = 125
+    sudo sysctl -w vm.watermark_scale_factor=125
     sudo sysctl -w vm.max_map_count=134217728
     sudo sysctl -w vm.admin_reserve_kbytes=524288
     sudo sysctl -w vm.stat_interval=1
