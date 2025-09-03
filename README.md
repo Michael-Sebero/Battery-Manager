@@ -1,18 +1,18 @@
 ## How to Install
-. Place `ac-mode` in `/bin`
+. Place `power-manager` in `/bin`
 
 . Make the program executable
 
 ```
-sudo chmod 755 /bin/ac-mode
+sudo chmod 755 /bin/power-manager
 ```
 
 . Add this section to `rc.local`
 
 ```
 # AC MODE
-if [ -x /bin/ac-mode ]; then
-    ( sleep 20; setsid nohup /bin/ac-mode >> /var/log/ac-mode.log 2>&1 ) &
+if [ -x /bin/power-manager ]; then
+    ( sleep 20; setsid nohup /bin/power-manager >> /var/log/power-manager 2>&1 ) &
 fi
 ```
 

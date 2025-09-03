@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# battery-performance.sh
+# Dynamically toggle sysctl values depending on AC + battery state
+# Three modes: Performance (AC + 79%+), Default (default), Power Saving (10% battery)
+
+BAT_PATH="/sys/class/power_supply/BAT0"
+AC_PATH="/sys/class/power_supply/AC"
+
+STATE="default_mode"
+
+# Load defaults from /etc/sysctl.conf into an associative array
+declare -A DEFAULTS
+while IFS='= ' read -r key val; do
+    [[ -n "$key" && "$key" != \#* ]] && DEFAULTS["$key"]="$val"
+done < /etc/sysctl.conf
+
+
+# Function: Apply Performance Settings
+apply_performance_mode() {
+    echo "[battery-performance] Applying PERFORMANCE sysctl values..."
+    
+    sudo sysctl -w net.core.rmem_max=16777216
+    sudo sysctl -w net.core.wmem_max=16777216
+    sudo sysctl -w net.ipv4.tcp_rmem="4096 87380 16777216"
+    sudo sysctl -w net.ipv4.tcp_wmem="4096 87380 16777216"
+    sudo sysctl -w net.ipv4.tcp_congestion_control=bbr
+
+    sudo sysctl -w kernel.randomize_va_space=1
+    sudo sysctl -w kernel.pid_max=262144
+
+    sudo sysctl -w fs.file-max=134217728
+    sudo sysctl -w fs.inotify.max_user_watches=134217728
+
+    sudo sysctl -w vm.vfs_cache_pressure=50
+    sudo sysctl -w vm.dirty_background_bytes=268435456
+    sudo sysctl -w vm.dirty_bytes=536870912
+    sudo sysctl -w vm.laptop_mode=0
+    sudo sysctl -w vm.dirty_expire_centisecs=5000
+    sudo sysctl -w vm.dirty_writeback_centisecs=1000
+    sudo sysctl -w vm.page-cluster=5
+    sudo sysctl -w vm.dirty_ratio=30
+    sudo sysctl -w vm.dirty_background_ratio=12
+    sudo sysctl -w vm.min_free_kbytes=262144
+    sudo sysctl -w vm.extfrag_threshold=100
+    sudo sysctl -w vm.compaction_proactiveness=80
+    sudo sysctl -w vm.watermark_boost_factor=15000
+    sudo sysctl -w vm.watermark_scale_factor=125
+    sudo sysctl -w vm.max_map_count=134217728
+    sudo sysctl -w vm.admin_reserve_kbytes=524288
+    sudo sysctl -w vm.stat_interval=1
+
+    sudo sysctl -w kernel.numa_balancing=1
+    sudo sysctl -w kernel.sched_autogroup_enabled=1
+    
+    sudo sysctl -w kernel.timer_migration=0
+    sudo sysctl -w kernel.sched_rt_runtime_us=990000 
+
+    sudo sysctl -w kernel.shmmax=17179869184
+    sudo sysctl -w kernel.shmall=4194304
+
+    STATE="performance_mode"
+}
+
+# Function: Apply Power Saving Settings
+apply_power_save_mode() {
+    echo "[battery-performance] Applying POWER SAVING sysctl values..."
+
+    sudo sysctl -w net.core.rmem_max=262144
+    sudo sysctl -w net.core.wmem_max=262144
+    sudo sysctl -w net.ipv4.tcp_rmem="4096 16384 262144"
+    sudo sysctl -w net.ipv4.tcp_wmem="4096 16384 262144"
+    sudo sysctl -w net.ipv4.tcp_congestion_control=cubic
+
+    sudo sysctl -w kernel.randomize_va_space=2
+    sudo sysctl -w kernel.pid_max=32768
+
+    sudo sysctl -w fs.file-max=65536
+    sudo sysctl -w fs.inotify.max_user_watches=8192
+
+    sudo sysctl -w vm.vfs_cache_pressure=200
+    sudo sysctl -w vm.dirty_background_bytes=67108864
+    sudo sysctl -w vm.dirty_bytes=134217728
+    sudo sysctl -w vm.laptop_mode=5
+    sudo sysctl -w vm.dirty_expire_centisecs=30000
+    sudo sysctl -w vm.dirty_writeback_centisecs=15000
+    sudo sysctl -w vm.page-cluster=0
+    sudo sysctl -w vm.dirty_ratio=15
+    sudo sysctl -w vm.dirty_background_ratio=5
+    sudo sysctl -w vm.min_free_kbytes=65536
+    sudo sysctl -w vm.extfrag_threshold=500
+    sudo sysctl -w vm.compaction_proactiveness=20
+    sudo sysctl -w vm.watermark_boost_factor=5000
+    sudo sysctl -w vm.watermark_scale_factor=50
+    sudo sysctl -w vm.max_map_count=65536
+    sudo sysctl -w vm.admin_reserve_kbytes=131072
+    sudo sysctl -w vm.stat_interval=5
+
+    sudo sysctl -w kernel.numa_balancing=0
+    sudo sysctl -w kernel.sched_autogroup_enabled=0
+    
+    sudo sysctl -w kernel.timer_migration=1
+    sudo sysctl -w kernel.sched_rt_runtime_us=950000
+    
+    sudo sysctl -w kernel.shmmax=4294967296
+    sudo sysctl -w kernel.shmall=1048576
+
+    STATE="power_save_mode"
+}
+
+# Function: Restore Defaults
+apply_default_mode() {
+    echo "[battery-performance] Restoring DEFAULT sysctl values..."
+    for key in "${!DEFAULTS[@]}"; do
+        sudo sysctl -w "$key=${DEFAULTS[$key]}" >/dev/null 2>&1
+    done
+    STATE="default_mode"
+}
+
+# Monitoring Loop
+while true; do
+    if [[ -d "$BAT_PATH" && -d "$AC_PATH" ]]; then
+        CAPACITY=$(<"$BAT_PATH/capacity")
+        STATUS=$(<"$AC_PATH/online")  # 1 = AC connected, 0 = not
+
+        # Priority order: Power Save (10%) > Performance (AC + 79%+) > Default
+        if [[ "$CAPACITY" -le 10 && "$STATE" != "power_save_mode" ]]; then
+            apply_power_save_mode
+        elif [[ "$STATUS" == "1" && "$CAPACITY" -ge 79 && "$STATE" != "performance_mode" && "$CAPACITY" -gt 10 ]]; then
+            apply_performance_mode
+        elif [[ ("$STATUS" == "0" || "$CAPACITY" -lt 79) && "$CAPACITY" -gt 10 && "$STATE" != "default_mode" ]]; then
+            apply_default_mode
+        fi
+    fi
+    sleep 30
+done
