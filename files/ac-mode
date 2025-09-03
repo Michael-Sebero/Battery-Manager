@@ -56,7 +56,7 @@ apply_perf() {
     sudo sysctl -w kernel.sched_autogroup_enabled=1
     
     # Scheduler: Low-Latency Optimizations
-    sudo sysctl -w kernel.timer_migration=1
+    sudo sysctl -w kernel.timer_migration=0
     sudo sysctl -w kernel.sched_rt_runtime_us=990000 
 
     # Media / Misc
