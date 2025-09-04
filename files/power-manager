@@ -61,6 +61,7 @@ apply_performance_mode() {
     sudo sysctl -w kernel.sched_rt_runtime_us=990000 >/dev/null 2>&1
     sudo sysctl -w kernel.shmmax=17179869184 >/dev/null 2>&1
     sudo sysctl -w kernel.shmall=4194304 >/dev/null 2>&1
+    sudo sysctl -w kernel.sched_bore=1 >/dev/null 2>&1
 
     STATE="performance_mode"
 }
@@ -81,7 +82,7 @@ apply_power_save_mode() {
     sudo sysctl -w vm.vfs_cache_pressure=200 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_background_bytes=67108864 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_bytes=134217728 >/dev/null 2>&1
-    sudo sysctl -w vm.laptop_mode=5 >/dev/null 2>&1
+    sudo sysctl -w vm.laptop_mode=2 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_expire_centisecs=30000 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_writeback_centisecs=15000 >/dev/null 2>&1
     sudo sysctl -w vm.page-cluster=0 >/dev/null 2>&1
