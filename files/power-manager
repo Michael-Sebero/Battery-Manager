@@ -35,13 +35,10 @@ apply_performance_mode() {
     sudo sysctl -w net.ipv4.tcp_rmem="4096 87380 16777216" >/dev/null 2>&1
     sudo sysctl -w net.ipv4.tcp_wmem="4096 87380 16777216" >/dev/null 2>&1
     sudo sysctl -w net.ipv4.tcp_congestion_control=bbr >/dev/null 2>&1
-
     sudo sysctl -w kernel.randomize_va_space=1 >/dev/null 2>&1
     sudo sysctl -w kernel.pid_max=262144 >/dev/null 2>&1
-
     sudo sysctl -w fs.file-max=134217728 >/dev/null 2>&1
     sudo sysctl -w fs.inotify.max_user_watches=134217728 >/dev/null 2>&1
-
     sudo sysctl -w vm.vfs_cache_pressure=50 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_background_bytes=268435456 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_bytes=536870912 >/dev/null 2>&1
@@ -59,13 +56,9 @@ apply_performance_mode() {
     sudo sysctl -w vm.max_map_count=134217728 >/dev/null 2>&1
     sudo sysctl -w vm.admin_reserve_kbytes=524288 >/dev/null 2>&1
     sudo sysctl -w vm.stat_interval=1 >/dev/null 2>&1
-
-    sudo sysctl -w kernel.numa_balancing=1 >/dev/null 2>&1
     sudo sysctl -w kernel.sched_autogroup_enabled=1 >/dev/null 2>&1
-    
     sudo sysctl -w kernel.timer_migration=0 >/dev/null 2>&1
     sudo sysctl -w kernel.sched_rt_runtime_us=990000 >/dev/null 2>&1
-
     sudo sysctl -w kernel.shmmax=17179869184 >/dev/null 2>&1
     sudo sysctl -w kernel.shmall=4194304 >/dev/null 2>&1
 
@@ -81,13 +74,10 @@ apply_power_save_mode() {
     sudo sysctl -w net.ipv4.tcp_rmem="4096 16384 262144" >/dev/null 2>&1
     sudo sysctl -w net.ipv4.tcp_wmem="4096 16384 262144" >/dev/null 2>&1
     sudo sysctl -w net.ipv4.tcp_congestion_control=cubic >/dev/null 2>&1
-
     sudo sysctl -w kernel.randomize_va_space=2 >/dev/null 2>&1
     sudo sysctl -w kernel.pid_max=32768 >/dev/null 2>&1
-
     sudo sysctl -w fs.file-max=65536 >/dev/null 2>&1
     sudo sysctl -w fs.inotify.max_user_watches=8192 >/dev/null 2>&1
-
     sudo sysctl -w vm.vfs_cache_pressure=200 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_background_bytes=67108864 >/dev/null 2>&1
     sudo sysctl -w vm.dirty_bytes=134217728 >/dev/null 2>&1
@@ -105,13 +95,9 @@ apply_power_save_mode() {
     sudo sysctl -w vm.max_map_count=65536 >/dev/null 2>&1
     sudo sysctl -w vm.admin_reserve_kbytes=131072 >/dev/null 2>&1
     sudo sysctl -w vm.stat_interval=5 >/dev/null 2>&1
-
-    sudo sysctl -w kernel.numa_balancing=0 >/dev/null 2>&1
     sudo sysctl -w kernel.sched_autogroup_enabled=0 >/dev/null 2>&1
-    
     sudo sysctl -w kernel.timer_migration=1 >/dev/null 2>&1
     sudo sysctl -w kernel.sched_rt_runtime_us=950000 >/dev/null 2>&1
-    
     sudo sysctl -w kernel.shmmax=4294967296 >/dev/null 2>&1
     sudo sysctl -w kernel.shmall=1048576 >/dev/null 2>&1
 
